@@ -2,27 +2,17 @@ workflows:
   android-workflow:
     name: Arogya Android APK
     max_build_duration: 60
-    instance_type: linux_x2
+    instance_type: mac_mini_m2
 
     environment:
       java: 17
 
     scripts:
-      - name: Check Android project files
+      - name: Check Android project
         script: |
-          echo "Checking Android project structure..."
-          if [ ! -f settings.gradle.kts ] && [ ! -f settings.gradle ]; then
-            echo "ERROR: Gradle settings file missing."
-            exit 1
-          fi
-          if [ ! -d app ]; then
-            echo "ERROR: app folder missing."
-            exit 1
-          fi
-          if [ ! -f app/build.gradle.kts ] && [ ! -f app/build.gradle ]; then
-            echo "ERROR: App Gradle file missing."
-            exit 1
-          fi
+          test -f settings.gradle.kts || test -f settings.gradle
+          test -d app
+          test -f app/build.gradle.kts || test -f app/build.gradle
 
       - name: Build Debug APK
         script: |
