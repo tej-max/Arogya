@@ -1,6 +1,4 @@
-from pathlib import Path
-
-content = """workflows:
+workflows:
   android-workflow:
     name: Arogya Android APK
     max_build_duration: 60
@@ -14,32 +12,26 @@ content = """workflows:
         script: |
           echo "Checking Android project structure..."
           if [ ! -f settings.gradle.kts ] && [ ! -f settings.gradle ]; then
-            echo "ERROR: settings.gradle.kts or settings.gradle was not found in the repository root."
+            echo "ERROR: Gradle settings file missing."
             exit 1
           fi
           if [ ! -d app ]; then
-            echo "ERROR: The app/ folder is missing. Upload the complete Android project, including app/."
+            echo "ERROR: app folder missing."
             exit 1
           fi
           if [ ! -f app/build.gradle.kts ] && [ ! -f app/build.gradle ]; then
-            echo "ERROR: app/build.gradle.kts or app/build.gradle was not found."
+            echo "ERROR: App Gradle file missing."
             exit 1
           fi
 
-      - name: Build debug APK
+      - name: Build Debug APK
         script: |
           if [ -f ./gradlew ]; then
             chmod +x ./gradlew
             ./gradlew assembleDebug --stacktrace
           else
-            echo "Gradle wrapper not found; trying the Gradle installation on the build machine."
             gradle assembleDebug --stacktrace
           fi
 
     artifacts:
       - app/build/outputs/apk/debug/*.apk
-      - app/build/outputs/mapping/**/mapping.txt
-"""
-path = Path("/mnt/data/codemagic.yaml")
-path.write_text(content, encoding="utf-8")
-print(f"Created: {path}")
